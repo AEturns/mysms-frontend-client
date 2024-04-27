@@ -1,0 +1,41 @@
+:root {
+    --main: #C36302;
+    --mid-light: #D38D46;
+    --light: #FFF4EB;
+    --banger-btn: #C40202
+  }
+
+  .dash-card {
+    cursor: pointer;
+    transition: transform .4s; 
+  }
+
+  .dash-card:hover {
+    transform: scale(1.2); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }
+  
+
+  /* Styles for the mobile numbers list container */
+.mobile-numbers-container {
+  padding: 10px; /* Padding around the list */
+  border: 1px solid #ccc; /* Border around the list */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* Styles for the header row */
+.header-row {
+  background-color: #f0f0f0; /* Background color for the header */
+  padding: 10px;
+  border-bottom: 1px solid #ccc; /* Border below the header */
+}
+
+/* Styles for the header cell */
+.header-cell {
+  font-weight: bold; /* Bold font for the header */
+}
+
+/* Styles for each row in the list */
+.list-row {
+  padding: 10px; /* Padding around each row */
+  border-bottom: 1px solid #ccc; /* Border between rows */
+}
