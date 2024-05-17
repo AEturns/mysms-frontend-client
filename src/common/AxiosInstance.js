@@ -1,14 +1,20 @@
 import axios from 'axios';
-import { ALGORIXMO_MAIN_API, MAIN_API } from './const';
+import { ALGORIXMO_MAIN_API, MAIN_API, MESSAGE_SERVICE_API } from './const';
 import TokenService from 'src/services/TokenService';
-import { triggerTimedOutModal } from './common';
-import { CModal, CModalBody, CModalFooter, CModalHeader, CButton } from '@coreui/react';
-import TimedOutModal from 'src/components/Modals/TimedOutModal';
-import React from 'react'
 
 // Create an Axios instance with custom configuration, if needed
 export const axiosInstance = axios.create({
   baseURL: MAIN_API, // Replace with your API's base URL
+  timeout: 10000, // Set a timeout for requests (optional)
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': TokenService.getToken() ?`Bearer ${TokenService.getToken()}` : ''
+    // Add any custom headers you need here
+  },
+});
+
+export const messageServiceInstance = axios.create({
+  baseURL: MESSAGE_SERVICE_API, // Replace with your API's base URL
   timeout: 10000, // Set a timeout for requests (optional)
   headers: {
     'Content-Type': 'application/json',

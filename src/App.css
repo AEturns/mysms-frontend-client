@@ -39,3 +39,33 @@
   padding: 10px; /* Padding around each row */
   border-bottom: 1px solid #ccc; /* Border between rows */
 }
+
+
+
+.chat-bubble {
+  padding: 10px;
+  border-radius: 15px;
+  display: inline-block;
+  max-width: 80%;
+}
+
+/* Style for short text */
+.short-text {
+  background-color: lightblue;
+}
+
+/* Style for medium text */
+.medium-text {
+  background-color: lightgreen;
+}
+
+/* Style for long text */
+.long-text {
+  background-color: lightcoral;
+}
+
+/* Class to align chat bubble to the right */
+.align-right {
+  margin-left: auto; /* This will align the chat bubble to the right */
+  text-align: right;
+}

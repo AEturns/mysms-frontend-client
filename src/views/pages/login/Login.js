@@ -22,6 +22,8 @@ import logo from 'src/assets/images/logo.png'
 import { AuthService } from 'src/services/auth.service'
 
 import './switch.css'
+import { UserService } from 'src/services/user.service'
+import TokenService from 'src/services/TokenService'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -34,10 +36,11 @@ const Login = () => {
 
   const loginUser = async () => {
     setLoading(true)
-    if(isAdmin) {
-      AuthService.login(username, password)
-      .then((res) => {
-        console.log(res)
+
+    await AuthService.login(username, password)
+      .then(async (res) => {
+        setLoading(false)
+        await getUser(res.user.id)
         window.location.reload(false)
       })
       .catch((err) => {
@@ -45,24 +48,23 @@ const Login = () => {
         setLoading(false)
         console.log(err)
       })
-    } else {
-
-      AuthService.organizerLogin(username, password)
-      .then((res) => {
-        console.log(res)
-        window.location.href = '#/consumer/dash'
-        window.location.reload(false)
-      })
-      .catch((err) => {
-        setErrorMessage(MODAL_MSGES.LOGIN_INVALID)
-        setLoading(false)
-        console.log(err)
-      })
-    }
-
   }
 
-  console.log(isAdmin)
+  const getUser = async (id) => {
+    setLoading(true)
+    await UserService.getUserDataByID(id)
+      .then((res) => {
+        const { campaigns, ...restOfUserData } = res[0]
+        const jwt = TokenService.getUser().jwt
+        TokenService.setUser({ jwt, user: restOfUserData })
+        setLoading(false)
+      })
+      .catch((err) => {
+        setErrorMessage(MODAL_MSGES.LOGIN_INVALID)
+        setLoading(false)
+        console.log(err)
+      })
+  }
 
   return (
     <div
@@ -84,21 +86,13 @@ const Login = () => {
                       style={{ alignSelf: 'center', textAlign: 'center' }}
                       height={70}
                     />
-                    <p style={{ color: COLORS.MID_LIGHT, fontWeight: 'bold' }}>{CLIENT_NAME?.toLocaleUpperCase()}</p>
+                    <p style={{ color: COLORS.MID_LIGHT, fontWeight: 'bold' }}>
+                      {CLIENT_NAME?.toLocaleUpperCase()}
+                    </p>
                   </div>
                   <CForm>
                     <h1>Login</h1>
 
-                    {/* <span className='switch-r'>
-                      <input type='checkbox' id='switcher' />
-                      <labe1 htmlFor="switcher" />
-
-                    </span> */}
-                          <label className="toggle mt-2 mb-2">
-                      <CFormInput type="checkbox" onChange={(e) => setIsAdmin(e.target.checked)} value={isAdmin} />
-                      <span className="slider"></span>
-                      <span className="labels" data-on="Admin" data-off="Client"></span>
-                    </label>
                     <p className="text-medium-emphasis">Sign In to your account</p>
 
                     <CInputGroup className="mb-3">
@@ -130,8 +124,6 @@ const Login = () => {
                       <CFormSwitch id="formSwitchCheckDefault" />
                       <span>Organizer</span>
                     </div> */}
-
-              
 
                     <span style={{ color: COLORS.DANGER_BTN, fontSize: '0.8em' }}>
                       {errorMessage}

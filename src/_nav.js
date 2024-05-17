@@ -1,6 +1,7 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilShortText,
   cilStar,
 
 } from '@coreui/icons'
@@ -21,7 +22,7 @@ const _nav = [
     component: CNavItem,
     name: 'Campaigns',
     to: '/campaigns',
-    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+    icon: <CIcon icon={cilShortText} customClassName="nav-icon" />,
   },
  
   // {

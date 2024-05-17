@@ -5,7 +5,7 @@ import { algoAxiosInstance, axiosInstance } from 'src/common/AxiosInstance'
 export const AuthService = {
   registerUser: async (data) => {
     try {
-      const response = await axiosInstance.post('/user-register', data)
+      const response = await axiosInstance.post('/auth/local/register', data)
       return response.data
     } catch (error) {
       throw error
@@ -22,7 +22,7 @@ export const AuthService = {
 
   getUsersAll: async () => {
     try {
-      const response = await axiosInstance.get('/user-register')
+      const response = await axiosInstance.get('/user-details')
       return response.data
     } catch (error) {
       throw error
@@ -47,9 +47,7 @@ export const AuthService = {
         password,
       })
       if (response.data.jwt) {
-
-
-        // TokenService.setUser({...response.data, clientData: clientData.data.data[0]})
+        TokenService.setUser(response.data)
       }
       return response.data
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, createContext, useEffect, useState } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import './scss/style.scss'
 import { AuthService } from './services/auth.service'
@@ -20,19 +20,21 @@ const Register = React.lazy(() => import('./views/pages/register/Register'))
 const Page404 = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const ConsumerDashboard = React.lazy(() => import('./views/pages/consumer/Dashboard'))
-const LotteryCarousel = React.lazy(() => import('./views/pages/main/campaign-main/CampaignCarousel'))
+const CampaignCarousel = React.lazy(() => import('./views/pages/main/campaign-main/CampaignCarousel'))
+
+
 
 function App() {
   const [userLogin, setUserLogin] = useState(true)
-
+  
   useEffect(() => {
     const user = TokenService.getUser()
 
     if (user?.jwt) {
       setUserLogin(true)
     } else {
-      //logOut()
-      setUserLogin(true)
+      logOut()
+      // setUserLogin(true)
     }
   }, [])
 
@@ -75,6 +77,7 @@ function App() {
         </Routes>
       </Suspense>
     </HashRouter>
+
   )
 }
 

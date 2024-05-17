@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 
-const localStorageName = "user-test-project"
+const localStorageName = "usermysmsaqsghdhnbzxc3"
 
 const getLocalRefreshToken = () => {
   const user = JSON.parse(localStorage.getItem(localStorageName));
