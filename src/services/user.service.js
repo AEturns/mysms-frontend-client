@@ -5,12 +5,12 @@ export const UserService = {
     try {
       let response = null
       if (token)
-        response = await axiosInstance.get(`users?populate=*&filters[id][$eq]=${id}`, {
+        response = await axiosInstance.get(`users?populate=*&filters[id][$eq]=${id}&sort[0]=createdAt:desc`, {
           headers: {
             Authorization: token ? `Bearer ${token}` : '',
           },
         })
-      else response = await axiosInstance.get(`users?populate=*&filters[id][$eq]=${id}`)
+      else response = await axiosInstance.get(`users?populate=*&filters[id][$eq]=${id}&sort[0]=createdAt:desc`)
       return response.data
     } catch (error) {
       throw error

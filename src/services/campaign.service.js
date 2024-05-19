@@ -40,7 +40,7 @@ export const CampaignService = {
   approveSendCampaign: async (campaignId, userId) => {
     try {
       const response = await messageServiceInstance.get(
-        '/campaign/send-sms/' + campaignId + '/' + userId,
+        '/campaign/send-sms/' + campaignId + '/' + userId ,
       )
       return response.data
     } catch (error) {
