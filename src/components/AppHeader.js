@@ -32,7 +32,7 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderBrand className="mx-auto d-md-none" to="/" style={{ display: 'flex', gap: 10, alignSelf: "center", color: COLORS.MAIN, fontWeight: 'bold' }}>
           <CImage src={logo} height={48} />{' '}
-          <span style={{paddingTop: 10}}>{CLIENT_NAME}<span style={{fontSize: '10px'}}>- Admin Portal</span></span>
+          <span style={{paddingTop: 10}}>{CLIENT_NAME}<span style={{fontSize: '10px'}}>- Portal</span></span>
         </CHeaderBrand>
         <CHeaderNav className="d-none d-md-flex me-auto">
           {/* <CNavItem>

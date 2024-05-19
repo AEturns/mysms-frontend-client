@@ -9,14 +9,14 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
-import { cilLockLocked, cilUser, cilEnvelopeClosed, cilBadge } from '@coreui/icons'
+import { cilLockLocked, cilUser, cilEnvelopeClosed, cilBadge, cilCash } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import avatar8 from './../../assets/images/avatars/8.jpg'
 import TokenService from 'src/services/TokenService'
 import { COLORS } from 'src/common/const'
 import { AuthService } from 'src/services/auth.service'
 
-const AppHeaderDropdown = ({consumer = false}) => {
+const AppHeaderDropdown = () => {
   const logOut = () => {
     AuthService.logout()
     window.location.reload(false)
@@ -29,35 +29,23 @@ const AppHeaderDropdown = ({consumer = false}) => {
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownHeader className="bg-light fw-semibold py-2">Account</CDropdownHeader>
-        {!consumer && (
-          <>
-            {' '}
-            <CDropdownItem>
-              <CIcon icon={cilUser} className="me-2" />
-              Username
-            </CDropdownItem>
-            <CDropdownItem>
-              <CIcon icon={cilEnvelopeClosed} className="me-2" />
-              Email
-            </CDropdownItem>
-            <CDropdownDivider />
-          </>
-        )}
 
-{consumer && (
-          <>
-            {' '}
-            <CDropdownItem>
-              <CIcon icon={cilUser} className="me-2" />
-              Username
-            </CDropdownItem>
-            <CDropdownItem>
-              <CIcon icon={cilBadge} className="me-2" />
-              Email
-            </CDropdownItem>
-            <CDropdownDivider />
-          </>
-        )}
+        <>
+          {' '}
+          <CDropdownItem>
+            <CIcon icon={cilUser} className="me-2" />
+            {TokenService.getUser()?.user?.username}
+          </CDropdownItem>
+          <CDropdownItem >
+            <CIcon icon={cilEnvelopeClosed} className="me-2"  />
+            {TokenService.getUser()?.user?.email}
+          </CDropdownItem>
+          <CDropdownItem>
+            <CIcon icon={cilCash} className="me-2" />
+            Rs. 0.00
+          </CDropdownItem>
+          <CDropdownDivider />
+        </>
 
         <CDropdownItem onClick={logOut} style={{ color: COLORS.DANGER_BTN, cursor: 'pointer' }}>
           <CIcon icon={cilLockLocked} className="me-2" />

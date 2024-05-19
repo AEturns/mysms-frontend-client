@@ -40,7 +40,7 @@ const Login = () => {
     await AuthService.login(username, password)
       .then(async (res) => {
         setLoading(false)
-        await getUser(res.user.id)
+        await getUser(res.user.id, res.jwt)
         window.location.reload(false)
       })
       .catch((err) => {
@@ -50,9 +50,9 @@ const Login = () => {
       })
   }
 
-  const getUser = async (id) => {
+  const getUser = async (id, token) => {
     setLoading(true)
-    await UserService.getUserDataByID(id)
+    await UserService.getUserDataByID(id, token)
       .then((res) => {
         const { campaigns, ...restOfUserData } = res[0]
         const jwt = TokenService.getUser().jwt
@@ -69,7 +69,7 @@ const Login = () => {
   return (
     <div
       className="min-vh-100 d-flex flex-row align-items-center"
-      style={{ background: `linear-gradient(${COLORS.MAIN}, ${COLORS.MID_LIGHT})` }}
+      style={{ background: `linear-gradient(${COLORS.MAIN}, ${COLORS.SECONDARY})` }}
     >
       <CContainer>
         <CRow className="justify-content-center">

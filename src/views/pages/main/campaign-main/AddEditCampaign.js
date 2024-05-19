@@ -13,13 +13,19 @@ import {
   CFormTextarea,
   CRow,
 } from '@coreui/react'
+import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import CSVReader from 'react-csv-reader'
 import { useParams } from 'react-router-dom'
+import { sassNull } from 'sass'
+import { getNullOrUndefinedAttributes } from 'src/common/common'
 import { COLORS, MODAL_MSGES, PER_MSG_COST } from 'src/common/const'
 import ChatBubble from 'src/components/ChatBubble'
+import LoadingFullscreen from 'src/components/LoadingFullscreen'
 import MobileNumbersList from 'src/components/MobileNumbersList'
 import SuccessModal from 'src/components/Modals/SuccessModal'
+import WarningModal from 'src/components/Modals/WarningModal'
+import TokenService from 'src/services/TokenService'
 import { CampaignService } from 'src/services/campaign.service'
 import Swal from 'sweetalert2'
 
@@ -32,22 +38,32 @@ function AddEditCampaign() {
   const [audienceType, setAudienceType] = useState('custom')
   const [enteredNumber, setEnteredNumber] = useState('')
   const [enteredNumberAlert, setEnteredNumberAlert] = useState('')
+  const [scheduleType, setScheduleType] = useState('send_now')
+  const [scheduleDate, setScheduleDate] = useState(moment(new Date()).format('YYYY-MM-DD'))
+  const [scheduleTime, setScheduleTime] = useState(moment(new Date()).format('HH:MM'))
 
   const [successModalVisible, setSuccessModalVisible] = useState(false)
   const [isAlert, setIsAlert] = useState(false)
   const [alertMessage, setAlertMessage] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [warnningModalVisible, setWarnningModalVisible] = useState(false)
+  const userId = TokenService.getUser()?.user?.id
 
+  const [fileInfo, setFileInfo] = useState(null)
   useEffect(() => {
     if (type == 'edit' && id > 0) {
-      // getVoterById(id)
+      getCampaignDataByID()
     }
   }, [id, type])
 
-  const handleForce = (data, fileInfo) => {
+  const handleForce = (data, fileInfo, originalFile) => {
+    setFileInfo(originalFile)
     setNumberList(data)
   }
 
-  let messageCost = (numberList.length * PER_MSG_COST).toLocaleString('en-US')
+  let messageCost = (
+    numberList.length * TokenService.getUser()?.user?.user_detail?.perMessageCount
+  ).toLocaleString('en-US')
 
   const papaparseOptions = {
     header: true,
@@ -94,7 +110,7 @@ function AddEditCampaign() {
 
     const data = {
       data: {
-        user: 1,
+        user: userId,
         campaignName: campaignName,
         campaignDetails: campaignMessage,
         messageCost: Number(messageCost),
@@ -103,22 +119,99 @@ function AddEditCampaign() {
         numberList: audienceType == 'custom' ? nums : [],
       },
     }
-
+    setLoading(true)
     await CampaignService.createCampaign(data)
-      .then((res) => {
+      .then(async (res) => {
+        if (audienceType != 'custom') await uploadCSVFile(res?.data.id)
         setSuccessModalVisible(true)
+        setLoading(false)
       })
       .catch((e) => {
         console.error(e)
+        setLoading(false)
         Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        })
       })
   }
 
+  const uploadCSVFile = async (id) => {
+    if (!fileInfo) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Something went wrong with the CSV File!',
+      })
+      return
+    }
 
+    const formData = new FormData()
+    formData.append('csv', fileInfo)
+
+    await CampaignService.uploadCampaignFile(formData, id)
+      .then((res) => {
+        setSuccessModalVisible(true)
+        setLoading(false)
+      })
+      .catch((e) => {
+        console.error(e)
+        setLoading(false)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Something went wrong!',
+        })
+      })
+  }
+
+  const getCampaignDataByID = async () => {
+    await CampaignService.getCampaign(id)
+      .then((res) => {
+        assignData(res.data)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+  }
+
+  const assignData = async (data) => {
+    setCampaignName(data.attributes.campaignName)
+    setCampaignMessage(data.attributes.campaignDetails)
+    setAudienceType(data.attributes.audience)
+
+    setNumberList(
+      data.attributes.audience == 'custom'
+        ? data.attributes.numberList.map((number) => ({ mobile: number }))
+        : [],
+    )
+  }
+
+  const checkData = async () => {
+    setIsAlert(false)
+    if (campaignName == '') {
+      setIsAlert(true)
+      setAlertMessage('Campaign Name is required')
+      return false
+    }
+
+    if (campaignMessage == '') {
+      setIsAlert(true)
+      setAlertMessage('Camapign Message is required')
+      return false
+    }
+
+    if (numberList.length <= 0) {
+      setIsAlert(true)
+      setAlertMessage('Number base is required')
+      return false
+    }
+
+    setWarnningModalVisible(true)
+  }
+
+  console.log(fileInfo)
 
   return (
     <CCard className="mb-4">
@@ -126,6 +219,7 @@ function AddEditCampaign() {
         <h5>Campaign Configaration</h5>
       </CCardHeader>
       <CCardBody>
+        <LoadingFullscreen loading={loading} />
         <CRow>
           <CCol md={8}>
             <CRow className="mb-4">
@@ -202,9 +296,12 @@ function AddEditCampaign() {
                     <CFormLabel htmlFor="staticEmail" className="col-form-label">
                       Upload CSV File <span style={{ color: 'red' }}>*</span>
                     </CFormLabel>
+
                     <CSVReader
                       cssClass="mt-1"
-                      onFileLoaded={handleForce}
+                      onFileLoaded={(data, fileInfo, originalFile) =>
+                        handleForce(data, fileInfo, originalFile)
+                      }
                       parserOptions={papaparseOptions}
                     />
                   </CCol>
@@ -236,6 +333,63 @@ function AddEditCampaign() {
                 </CRow>
               </div>
             )}
+            {/* <CRow className="mt-3">
+              <CCol>
+                <CFormLabel htmlFor="staticEmail" className="col-form-label">
+                  Schedule Type <span style={{ color: 'red' }}>*</span>
+                </CFormLabel>
+                <div style={{ display: 'flex', gap: 50 }} className="mt-2">
+                  <CFormCheck
+                    type="radio"
+                    name="flexRadioDefaul2"
+                    id="flexRadioDefault2"
+                    label="Send Now"
+                    value="send_now"
+                    onChange={(e) => {
+                      setScheduleType(e.target.value)
+                    }}
+                    checked={scheduleType == 'send_now'}
+                  />
+                  <CFormCheck
+                    type="radio"
+                    name="flexRadioDefault2"
+                    id="flexRadioDefault2"
+                    label="Send Later"
+                    value="schedule"
+                    onChange={(e) => {
+                      setScheduleType(e.target.value)
+                    }}
+                    checked={scheduleType == 'schedule'}
+                  />
+                </div>
+              </CCol>
+            </CRow>
+            {scheduleType == 'schedule' && (
+              <CRow className="mt-3">
+                {' '}
+                <CCol>
+                  <CFormLabel htmlFor="staticEmail" className="col-form-label">
+                    Schedule Date & Time <span style={{ color: 'red' }}>*</span>
+                  </CFormLabel>
+                  <div style={{ display: 'flex', gap: 15 }}>
+                    <CFormInput
+                      type="date"
+                      style={{ width: 200 }}
+                      value={scheduleDate}
+                      min={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setScheduleDate(e.target.value)}
+                    />
+                    <CFormInput
+                      type="time"
+                      style={{ width: 140 }}
+                      value={scheduleTime}
+                      min={new Date().toISOString()}
+                      onChange={(e) => setScheduleTime(e.target.value)}
+                    />
+                  </div>
+                </CCol>
+              </CRow>
+            )} */}
             <CRow className="mt-4">
               <CCol>
                 <div
@@ -247,8 +401,18 @@ function AddEditCampaign() {
                   }}
                 >
                   <p style={{ fontWeight: 'bold' }}>SUMMERY:</p>
+                  <p>Mask Name = {TokenService.getUser()?.user?.user_detail?.mask}</p>
                   <p>Number Count = {numberList.length}</p>
-                  <p>Per Message Count = Rs. {PER_MSG_COST} </p>
+                  <p>
+                    Per Message Count = Rs.{' '}
+                    {TokenService.getUser()?.user?.user_detail?.perMessageCount || PER_MSG_COST}{' '}
+                  </p>
+                  {/* {scheduleType == 'schedule' && (
+                    <p>
+                      Schedule Date = {moment(scheduleDate).format('DD/MM/YYYY')} {moment(scheduleTime).format('HH:MM')}
+                      
+                    </p>
+                  )} */}
                   <p style={{ color: COLORS.MAIN }}>Total Campaign Cost = Rs. {messageCost}</p>
                 </div>
               </CCol>
@@ -267,10 +431,10 @@ function AddEditCampaign() {
             <CRow className="mt-5">
               <CCol>
                 <CButton
-                  onClick={() => createCampaign()}
-                  style={{ backgroundColor: COLORS.MAIN, border: '0px', width: 200 }}
+                  onClick={() => checkData()}
+                  style={{ backgroundColor: COLORS.SECONDARY, border: '0px', width: 200 }}
                 >
-                  CREATE CAMPAIGN
+                  {type == 'edit' ? 'UPDATE' : 'CREATE'} CAMPAIGN
                 </CButton>
               </CCol>
             </CRow>
@@ -283,6 +447,7 @@ function AddEditCampaign() {
                   <CCard>
                     <CCardBody>
                       <p>Message Preview:</p>
+
                       <ChatBubble text={campaignMessage} />
                     </CCardBody>
                   </CCard>
@@ -311,6 +476,14 @@ function AddEditCampaign() {
         description={MODAL_MSGES.CAMPAIGN.ADD_SUCCESS_MSG}
         onOpen={(status) => setSuccessModalVisible(status)}
         rediretUrl="/campaigns"
+      />
+      <WarningModal
+        title="Action Required!"
+        description="Pause for a moment! Are you sure you want to create this campaign?"
+        buttonTitle="CREATE NOW"
+        open={warnningModalVisible}
+        onOpen={(s) => setWarnningModalVisible(s)}
+        okay={(s) => createCampaign()}
       />
     </CCard>
   )

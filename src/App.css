@@ -1,6 +1,7 @@
 :root {
-    --main: #C36302;
-    --mid-light: #D38D46;
+    --main: #406E84;
+    --secondary: #EB9D5D;
+    --mid-light: #D2CFDF;
     --light: #FFF4EB;
     --banger-btn: #C40202
   }
@@ -68,4 +69,23 @@
 .align-right {
   margin-left: auto; /* This will align the chat bubble to the right */
   text-align: right;
+}
+
+ 
+.fullscreen-overlay {
+  z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.fullscreen-overlay.visible {
+  display: flex;
+  
 }

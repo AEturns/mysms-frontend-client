@@ -9,6 +9,18 @@ export const CampaignService = {
       throw error
     }
   },
+  uploadCampaignFile: async (data, id) => {
+    try {
+      const response = await axiosInstance.post('/import/csv/' + id, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
   getCampaignAll: async () => {
     try {
       const response = await axiosInstance.get('/campaigns')
@@ -17,9 +29,19 @@ export const CampaignService = {
       throw error
     }
   },
+  getCampaign: async (id) => {
+    try {
+      const response = await axiosInstance.get('/campaigns/' + id)
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  },
   approveSendCampaign: async (campaignId, userId) => {
     try {
-      const response = await messageServiceInstance.get('/campaign/send-sms/' + campaignId + '/' + userId)
+      const response = await messageServiceInstance.get(
+        '/campaign/send-sms/' + campaignId + '/' + userId,
+      )
       return response.data
     } catch (error) {
       throw error

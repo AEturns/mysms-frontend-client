@@ -5,7 +5,6 @@ import TokenService from 'src/services/TokenService';
 // Create an Axios instance with custom configuration, if needed
 export const axiosInstance = axios.create({
   baseURL: MAIN_API, // Replace with your API's base URL
-  timeout: 10000, // Set a timeout for requests (optional)
   headers: {
     'Content-Type': 'application/json',
     'Authorization': TokenService.getToken() ?`Bearer ${TokenService.getToken()}` : ''
@@ -15,7 +14,6 @@ export const axiosInstance = axios.create({
 
 export const messageServiceInstance = axios.create({
   baseURL: MESSAGE_SERVICE_API, // Replace with your API's base URL
-  timeout: 10000, // Set a timeout for requests (optional)
   headers: {
     'Content-Type': 'application/json',
     'Authorization': TokenService.getToken() ?`Bearer ${TokenService.getToken()}` : ''

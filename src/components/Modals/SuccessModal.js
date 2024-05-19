@@ -65,7 +65,7 @@ function SuccessModal({ title, description, rediretUrl, open, onOpen, addAnother
           </CButton>
         )}
         {rediretUrl && <CButton
-          style={{ backgroundColor: COLORS.MAIN, border: '0px' }}
+          style={{ backgroundColor: COLORS.SECONDARY, border: '0px' }}
           color="primary"
           onClick={() => navigate(rediretUrl)}
         >

@@ -41,7 +41,7 @@ const AppSidebar = () => {
         }}
       >
         <CImage src={logo} height={50} className="p-1" />
-        <h5 style={{ color: COLORS.MAIN }}>{CLIENT_NAME}<span style={{fontSize: '11px', fontStyle: 'italic'}}> Admin Portal</span></h5>
+        <h5 style={{ color: COLORS.MAIN }}>{CLIENT_NAME}<span style={{fontSize: '11px', fontStyle: 'italic'}}> Portal</span></h5>
       </CSidebarBrand>
       <CSidebarNav >
         <SimpleBar>

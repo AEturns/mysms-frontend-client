@@ -8,7 +8,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', exact: true, name: 'Dashboard', element: Dashboard },
   { path: '/campaigns', exact: true, name: 'Campaigns', element: LotteryCarousel },
-  { path: '/campaign/add/:type', exact: true, name: 'Campaign', element: AddEditLottery },
+  { path: '/campaign/:type/:id', exact: true, name: 'Campaign', element: AddEditLottery },
 
 ]
 

@@ -21,7 +21,8 @@ export const MODAL_MSGES = {
 export const PER_MSG_COST = 0.36
 
 export const COLORS = {
-  MAIN: '#AA4400',
+  MAIN: '#406E84',
+  SECONDARY: '#EB9D5D',
   MID_LIGHT: '#D2CFDF',
   LIGHT: '#FFF4EB',
   DANGER_BTN: '#C40202',

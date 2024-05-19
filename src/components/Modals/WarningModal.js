@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { COLORS } from 'src/common/const'
 import CorrectIconAnimation from 'src/assets/other/verified.gif'
 
-function WarningModal({ title, description, open, onOpen, okay, buttonTitle = 'Download' }) {
+function WarningModal({ title, description, open, onOpen, okay, buttonTitle = 'Download', buttonColor }) {
   const navigate = useNavigate()
   return (
     <CModal
@@ -33,7 +33,7 @@ function WarningModal({ title, description, open, onOpen, okay, buttonTitle = 'D
           className="mb-3"
         >
           {/* <CIcon icon={cilSave} size="3xl" /> */}
-          <CIcon style={{ color: COLORS.MAIN }} icon={cilWarning} width={80} />
+          <CIcon style={{ color: buttonColor || COLORS.MAIN }} icon={cilWarning} width={80} />
         </div>
         <p style={{ textAlign: 'center', fontSize: "1em" }}>{description}</p>
       </CModalBody>
@@ -43,7 +43,7 @@ function WarningModal({ title, description, open, onOpen, okay, buttonTitle = 'D
         </CButton>
         <CButton
             color="primary"
-            style={{ backgroundColor: COLORS.MAIN, border: '0px' }}
+            style={{ backgroundColor: buttonColor || COLORS.SECONDARY, border: '0px' }}
             onClick={() => {
               okay(true)
               onOpen(false)
