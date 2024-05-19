@@ -11,6 +11,7 @@ import {
   CFormInput,
   CFormLabel,
   CFormTextarea,
+  CLink,
   CRow,
 } from '@coreui/react'
 import moment from 'moment'
@@ -47,9 +48,11 @@ function AddEditCampaign() {
   const [alertMessage, setAlertMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [warnningModalVisible, setWarnningModalVisible] = useState(false)
+  const [csvFileLink, setCsvFileLink] = useState(null)
   const userId = TokenService.getUser()?.user?.id
 
   const [fileInfo, setFileInfo] = useState(null)
+  const [messageCosting, setMessageCosting] = useState(0)
   useEffect(() => {
     if (type == 'edit' && id > 0) {
       getCampaignDataByID()
@@ -180,12 +183,13 @@ function AddEditCampaign() {
     setCampaignName(data.attributes.campaignName)
     setCampaignMessage(data.attributes.campaignDetails)
     setAudienceType(data.attributes.audience)
-
     setNumberList(
       data.attributes.audience == 'custom'
         ? data.attributes.numberList.map((number) => ({ mobile: number }))
         : [],
     )
+    setCsvFileLink(data.attributes.audience == 'custom' ? null : data.attributes.csvFileLink)
+    setMessageCosting(data.attributes.messageCost)
   }
 
   const checkData = async () => {
@@ -304,6 +308,9 @@ function AddEditCampaign() {
                       }
                       parserOptions={papaparseOptions}
                     />
+                    <div className="mt-2">
+                      <CLink href={csvFileLink}>Download CSV File</CLink>
+                    </div>
                   </CCol>
                 </CRow>
               </div>
@@ -413,7 +420,14 @@ function AddEditCampaign() {
                       
                     </p>
                   )} */}
-                  <p style={{ color: COLORS.MAIN }}>Total Campaign Cost = Rs. {messageCost}</p>
+                  <p style={{ color: COLORS.MAIN }}>
+                    Total Campaign Cost = Rs.{' '}
+                    {audienceType == 'csv'
+                      ? type == 'edit'
+                        ? messageCosting
+                        : messageCost
+                      : messageCost}
+                  </p>
                 </div>
               </CCol>
             </CRow>{' '}
